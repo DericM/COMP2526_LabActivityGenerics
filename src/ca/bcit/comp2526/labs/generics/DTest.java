@@ -6,16 +6,16 @@ package ca.bcit.comp2526.labs.generics;
  * @author BCIT
  * @version 2016
  */
-interface DIterator {
+interface DIterator<T> {
     boolean isEmpty();
 
     boolean hasNext();
 
     boolean hasPrevious();
 
-    int next();
+    T next();
 
-    int previous();
+    T previous();
 }
 
 /**
@@ -24,8 +24,8 @@ interface DIterator {
  * @author BCIT
  * @version 2016
  */
-class DLinkedList {
-    private DNode head;
+class DLinkedList<T extends Comparable<T>> {
+    private DNode<T> head;
 
     /*
      * DNode.
@@ -34,11 +34,11 @@ class DLinkedList {
      * 
      * @version 2016
      */
-    private class DNode {
-        int data;
-        DNode previous, next;
+    private class DNode<R> {
+        R data;
+        DNode<R> previous, next;
 
-        DNode(int d) {
+        DNode(R d) {
             data = d;
         }
     }
@@ -47,17 +47,17 @@ class DLinkedList {
         head = null;
     }
 
-    public boolean insert(int d) {
-        DNode temp = new DNode(d);
-        DNode cur = head;
-        DNode prev = head;
+    public boolean insert(T d) {
+        DNode<T> temp = new DNode<T>(d);
+        DNode<T> cur = head;
+        DNode<T> prev = head;
         // 1. empty list case
         if (head == null) {
             head = temp;
             return true;
         }
         // 2. non-empty list, find position
-        while ((cur.next != null) && (cur.data < d)) {
+        while ((cur.next != null) && (cur.data.compareTo(d) < 0)) {
             prev = cur;
             cur = cur.next;
         }
@@ -67,7 +67,7 @@ class DLinkedList {
         // 4. single node in list
         if (cur == prev) {
             // 5. single node < new node
-            if (cur.data < d) {
+            if (cur.data.compareTo(d) < 0) {
                 cur.next = temp;
                 temp.previous = cur;
                 return true;
@@ -93,9 +93,9 @@ class DLinkedList {
     }
 
 
-    public DIterator iterator() {
-        return new DIterator() {
-            DNode cur = head;
+    public DIterator<T> iterator() {
+        return new DIterator<T>() {
+            DNode<T> cur = head;
 
             public boolean isEmpty() {
                 if (cur != null)
@@ -111,14 +111,14 @@ class DLinkedList {
                 return cur.previous != null;
             }
 
-            public int next() {
-                int d = cur.data;
+            public T next() {
+                T d = cur.data;
                 cur = cur.next;
                 return d;
             }
 
-            public int previous() {
-                int d = cur.data;
+            public T previous() {
+                T d = cur.data;
                 cur = cur.previous;
                 return d;
             }
@@ -135,15 +135,15 @@ class DLinkedList {
 public class DTest {
     
 
-    public static void print(DLinkedList list) {
-        DIterator i = list.iterator();
+    public static <T extends Comparable<T>> void print(DLinkedList<T> list) {
+        DIterator<T> i = list.iterator();
         while (!i.isEmpty())
             System.out.print("" + i.next() + " ");
         System.out.println("");
     }
 
-    public static void printR(DLinkedList list) {
-        DIterator i = list.iterator();
+    public static <T extends Comparable<T>> void printR(DLinkedList<T> list) {
+        DIterator<T> i = list.iterator();
         while (i.hasNext())
             i.next();
         while (!i.isEmpty())
